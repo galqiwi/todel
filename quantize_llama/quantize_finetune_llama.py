@@ -127,6 +127,10 @@ def quantize_llama_layer(layer, idx, cb, args, device, pre_orig_emb, orig_emb,
     del mixed_layer
 
 
+def foo():
+    pass
+
+
 def main(args):
     dtype_ = torch.float64 if args.use_fp64 else torch.float32
 
@@ -212,9 +216,6 @@ def main(args):
                 'computed original embedding for layer {} in {}s, pre msv {}, post msv {}'
                 .format(i,
                         time.time() - st, orig_msv, target_msv))
-
-        def foo():
-            pass
 
         proc_list[cur_device] = mp.Process(target=foo)
 
