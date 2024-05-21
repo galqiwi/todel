@@ -185,7 +185,7 @@ def main(args):
         if proc_list[cur_device] is not None:
 
             if cur_device in proc_list_taken:
-                for p in proc_list[cur_device]:
+                for p in proc_list:
                     p.join()
 
                 glog.info(f'SHUTDOWN')
