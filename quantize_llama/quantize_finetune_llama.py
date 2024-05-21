@@ -213,18 +213,23 @@ def main(args):
                 .format(i,
                         time.time() - st, orig_msv, target_msv))
 
-        proc_list[cur_device] = mp.Process(target=quantize_llama_layer,
-                                           args=(
-                                               model.model.layers[i],
-                                               i,
-                                               cb,
-                                               args,
-                                               cur_device,
-                                               orig_emb_cache[cur_device],
-                                               orig_emb_cache[cur_device + 1],
-                                               all_config['model_config'],
-                                           ))
+        def foo():
+            pass
+
+        proc_list[cur_device] = mp.Process(target=foo)
+
         proc_list[cur_device].start()
+
+        quantize_llama_layer(
+           model.model.layers[i],
+           i,
+           cb,
+           args,
+           cur_device,
+           orig_emb_cache[cur_device],
+           orig_emb_cache[cur_device + 1],
+           all_config['model_config'],
+        )
 
         cur_device = (cur_device + 1) % nproc
 
