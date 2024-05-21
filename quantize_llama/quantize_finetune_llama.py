@@ -225,6 +225,7 @@ def main(args):
                                                all_config['model_config'],
                                            ))
         proc_list[cur_device].start()
+        proc_list[cur_device].join()
 
         cur_device = (cur_device + 1) % nproc
 
