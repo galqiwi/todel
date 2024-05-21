@@ -179,6 +179,7 @@ def main(args):
         glog.info(f'layer {i} gpu {cur_device}')
         if proc_list[cur_device] is not None:
             proc_list[cur_device].join()
+            assert proc_list[cur_device].exitcode == 0, 'subprocess failed'
             if cur_device == 0:
                 orig_emb_cache[0].copy_(orig_emb_cache[-1])
         if cur_device + 1 < nproc and proc_list[cur_device + 1] is not None:
