@@ -183,8 +183,10 @@ def main(args):
         glog.info(f'layer {i} gpu {cur_device}')
         if proc_list[cur_device] is not None:
 
-            for p in proc_list:
-                p.join()
+            if proc_list[cur_device]._target is not empty:
+                for p in proc_list[cur_device]:
+                    p.join()
+
                 glog.info(f'SHUTDOWN')
                 return
 
