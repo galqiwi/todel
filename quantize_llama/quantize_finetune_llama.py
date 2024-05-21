@@ -179,11 +179,12 @@ def main(args):
 
     cur_device = 0
     proc_list = [None for _ in range(nproc)]
+    proc_list_taken = set()
     for i in range(len(model.model.layers)):
         glog.info(f'layer {i} gpu {cur_device}')
         if proc_list[cur_device] is not None:
 
-            if proc_list[cur_device]._target is not empty:
+            if cur_device in proc_list_taken:
                 for p in proc_list[cur_device]:
                     p.join()
 
@@ -229,6 +230,7 @@ def main(args):
             glog.info(f'layer {i} gpu {cur_device} already done')
             proc_list[cur_device] = mp.Process(target=empty)
         else:
+            proc_list_taken.add(cur_device)
             proc_list[cur_device] = mp.Process(target=quantize_llama_layer,
                                                args=(
                                                    model.model.layers[i],
