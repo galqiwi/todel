@@ -67,6 +67,10 @@ def check_exist(idx, args):
     return True
 
 
+def empty():
+    pass
+
+
 def quantize_llama_layer(layer, idx, cb, args, device, pre_orig_emb, orig_emb,
                          model_config):
     if check_exist(idx, args):
@@ -178,6 +182,12 @@ def main(args):
     for i in range(len(model.model.layers)):
         glog.info(f'layer {i} gpu {cur_device}')
         if proc_list[cur_device] is not None:
+
+            for p in proc_list:
+                p.join()
+                glog.info(f'SHUTDOWN')
+                return
+
             proc_list[cur_device].join()
             if cur_device == 0:
                 orig_emb_cache[0].copy_(orig_emb_cache[-1])
@@ -213,17 +223,21 @@ def main(args):
                 .format(i,
                         time.time() - st, orig_msv, target_msv))
 
-        proc_list[cur_device] = mp.Process(target=quantize_llama_layer,
-                                           args=(
-                                               model.model.layers[i],
-                                               i,
-                                               cb,
-                                               args,
-                                               cur_device,
-                                               orig_emb_cache[cur_device],
-                                               orig_emb_cache[cur_device + 1],
-                                               all_config['model_config'],
-                                           ))
+        if check_exist(i, args):
+            glog.info(f'layer {i} gpu {cur_device} already done')
+            proc_list[cur_device] = mp.Process(target=empty)
+        else:
+            proc_list[cur_device] = mp.Process(target=quantize_llama_layer,
+                                               args=(
+                                                   model.model.layers[i],
+                                                   i,
+                                                   cb,
+                                                   args,
+                                                   cur_device,
+                                                   orig_emb_cache[cur_device],
+                                                   orig_emb_cache[cur_device + 1],
+                                                   all_config['model_config'],
+                                               ))
         proc_list[cur_device].start()
 
         cur_device = (cur_device + 1) % nproc
