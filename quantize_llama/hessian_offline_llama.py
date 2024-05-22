@@ -129,10 +129,10 @@ def accumulate(in_q, move_q, ngpus, args, transformer_layer_index):
 def main(args):
     print("loading model...")
     model = AutoModelForCausalLM.from_pretrained(args.base_model,
-                                                 torch_dtype="auto",
+                                                 torch_dtype="auto", trust_remote_code=True,
                                                  low_cpu_mem_usage=True)
     print("loaded model!")
-    tokenizer = AutoTokenizer.from_pretrained(args.base_model, use_fast=True)
+    tokenizer = AutoTokenizer.from_pretrained(args.base_model, trust_remote_code=True, use_fast=True)
     tokenizer.pad_token = tokenizer.eos_token
 
     if os.path.isfile(f"{args.save_path}/dev_activations.pt"):
