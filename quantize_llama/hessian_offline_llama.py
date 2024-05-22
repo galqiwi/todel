@@ -50,15 +50,32 @@ def move_fn(in_q, async_copy_speed):
         print(f'moved {src} to {tgt}')
 
 
+# Phi3DecoderLayer(
+#   (self_attn): Phi3Attention(
+#     (o_proj): Linear(in_features=3072, out_features=3072, bias=False)
+#     (qkv_proj): Linear(in_features=3072, out_features=9216, bias=False)
+#     (rotary_emb): Phi3RotaryEmbedding()
+#   )
+#   (mlp): Phi3MLP(
+#     (gate_up_proj): Linear(in_features=3072, out_features=16384, bias=False)
+#     (down_proj): Linear(in_features=8192, out_features=3072, bias=False)
+#     (activation_fn): SiLU()
+#   )
+#   (input_layernorm): Phi3RMSNorm()
+#   (resid_attn_dropout): Dropout(p=0.0, inplace=False)
+#   (resid_mlp_dropout): Dropout(p=0.0, inplace=False)
+#   (post_attention_layernorm): Phi3RMSNorm()
+# )
+
 def forward_layer(layer, position_ids, attention_mask, bs, device, in_q,
                   out_q):
     torch.set_grad_enabled(False)
     layer = layer.to(device)
     position_ids = position_ids.to(device)
     attention_mask = attention_mask.to(device)
-    done_qkv = utils.register_H_hook(layer.self_attn.q_proj, device)
+    done_qkv = utils.register_H_hook(layer.self_attn.qkv_proj, device)
     done_o = utils.register_H_hook(layer.self_attn.o_proj, device)
-    done_up = utils.register_H_hook(layer.mlp.up_proj, device)
+    done_up = utils.register_H_hook(layer.mlp.gate_up_proj, device)
     done_down = utils.register_H_hook(layer.mlp.down_proj, device)
 
     while True:
