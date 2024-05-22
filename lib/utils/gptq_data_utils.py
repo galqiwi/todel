@@ -145,13 +145,19 @@ def get_ptb_new(nsamples, seed, seqlen, model):
 def get_c4_new(nsamples, seed, seqlen, model):
     from datasets import load_dataset
     traindata = load_dataset(
-        'allenai/c4',
-        data_files={'train': 'en/c4-train.00000-of-01024.json.gz'},
-        split='train')
+        "allenai/c4",
+        "default",
+        data_files={"train": "en/c4-train.00000-of-01024.json.gz"},
+        split="train",
+        revision="607bd4c8450a42878aa9ddc051a65a055450ef87",
+    )
     valdata = load_dataset(
-        'allenai/c4',
-        data_files={'validation': 'en/c4-validation.00000-of-00008.json.gz'},
-        split='validation')
+        "allenai/c4",
+        "default",
+        data_files={"validation": "en/c4-validation.00000-of-00008.json.gz"},
+        split="validation",
+        revision="607bd4c8450a42878aa9ddc051a65a055450ef87",
+    )
 
     from transformers import AutoTokenizer
     tokenizer = AutoTokenizer.from_pretrained(model, use_fast=False)
