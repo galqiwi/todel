@@ -203,11 +203,14 @@ def main(args):
             continue
 
         transformer_layer = model.model.layers[transformer_layer_index]
-        # check that there are four layers, as expected
+        # check that there are N layers, as expected
         assert (len([
             m for m in transformer_layer.modules()
             if isinstance(m, torch.nn.Linear)
-        ]) == 7)
+        ]) == 4), len([
+            m for m in transformer_layer.modules()
+            if isinstance(m, torch.nn.Linear)
+        ])
 
         chunk_size = min(args.chunk_size, len(dev_emb))
         ngpus = min(torch.cuda.device_count(), len(dev_emb) // chunk_size)
